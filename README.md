@@ -1,5 +1,4 @@
 ##### Direct-Estimation-Program
-=========================
 ################################################################
 ###### README, 12.08.2014
 ###### Program of Direct estimation of differential networks
@@ -33,4 +32,4 @@ Sihai D. Zhao, T. Tony Cai, and Hongzhe Li (https://github.com/sdzhao/dpm/blob/m
                based on code from the dpm.R (https://github.com/sdzhao/dpm/blob/master/dpm.R).
                Use SICE as true precision matrices to generate data and compare dpmcvx.R
                and dpm.R.
-###### All of the programs need compilation when used.
+######All of the programs need compilation when used.
