@@ -41,9 +41,8 @@ for (j in 1:nt)
 {for (k in 3:p)
 {m[k]=mean(data[,k]);
 ret[[i]][j,k]=ret[[i]][j,k]-m[k];
-}
-}
-}
+}}}
+
 ####################################
 numcontrol=0;
 for (i in 1:ns)
@@ -67,10 +66,8 @@ for (k in 1:ns)
 {
 X1.t[(nt*(i-1)+1):(nt*i),]=ret[[k]][,(3):(p)];
 i=i+1;
-}
-}
-}
-}
+}}}}
+
 i=1;
 for (j in 1:ns)
 {
@@ -81,10 +78,8 @@ for (k in 1:ns)
 {
 X0.t[(nt*(i-1)+1):(nt*i),]=ret[[k]][,(3):(p)];
 i=i+1;
-}
-}
-}
-}
+}}}}
+
 X11.t=matrix(0,(floor(numcontrol/2))*nt,p-2)
 X12.t=matrix(0,(ceiling(numcontrol/2))*nt,p-2)
 X01.t=matrix(0,(floor(numFASD/2))*nt,p-2)
