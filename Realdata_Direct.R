@@ -201,26 +201,18 @@ dpm.ic <- function(S1,S0,ret,n,penalty)
 
 ====================================================================================
 ####### 2. directgenerate.R #######
-## DEA.R on Real Data
 ====================================================================================
-## **************************************************************
-## DEA.R on Real Data
-## **************************************************************
-
 rm(list=ls());
 dyn.load("dpm.so");
 source("dpmchangelambda.R");
 library(MASS);
 library(ROCR);
-
-
 n=180;
 n1=n*25;
 n0=n*30;
 ## **************************************************************
 ## Read Data
 ## **************************************************************
-
 data=read.csv("/home/merganser/jinjin/data1.csv",header=T)
 group=read.csv("/home/merganser/jinjin/group.csv",header=T)
 data=as.matrix(data)
@@ -248,10 +240,8 @@ ret[[i]][j,k]=ret[[i]][j,k]-mean(ret[[i]][,k]);
 #{for (k in 3:p)
 #{m[k]=mean(data[,k]);
 #ret[[i]][j,k]=ret[[i]][j,k]-m[k];
-#}
-#}
-#}
-
+#}}}
+###############
 numcontrol=0;
 for (i in 1:ns)
 { if (group[i,4]==1)
@@ -262,10 +252,8 @@ for (i in 1:ns)
 { if (group[i,4]==2)
 {numFASD=numFASD+1}
 }
-
 X1.t=matrix(0,numcontrol*nt,p-2)
 X0.t=matrix(0,numFASD*nt,p-2)
-
 i=1;
 for (j in 1:ns)
 {
@@ -276,10 +264,7 @@ for (k in 1:ns)
 {
 X1.t[(nt*(i-1)+1):(nt*i),]=ret[[k]][,(3):(p)];
 i=i+1;
-}
-}
-}
-}
+}}}}
 
 i=1;
 for (j in 1:ns)
@@ -291,10 +276,8 @@ for (k in 1:ns)
 {
 X0.t[(nt*(i-1)+1):(nt*i),]=ret[[k]][,(3):(p)];
 i=i+1;
-}
-}
-}
-}
+}}}}
+
 #####Calculation#####
 setwd("/home/merganser/jinjin")
 fit.aic <- dpm(X1.t,X0.t,nlambda=100,tuning="aic");
