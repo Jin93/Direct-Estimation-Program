@@ -7,8 +7,8 @@
 ==============================================================
 ###### Description
 R program for Direct Estimation, its modifications and applications on FASD data. 
-R code for Direct Estimation was modified based on code from the dpm.R by 
-Sihai D. Zhao, T. Tony Cai, and Hongzhe Li (https://github.com/sdzhao/dpm/blob/master/dpm.R).
+R code for Direct Estimation was modified based on code from the dpm.R by Sihai D. Zhao, 
+T. Tony Cai, and Hongzhe Li (https://github.com/sdzhao/dpm/blob/master/dpm.R).
 ==============================================================
 ##### Contents
 ######Realdata_Direct.R
