@@ -1,12 +1,14 @@
-##### RealData.R
-
+##### RealDataDirect.R
 ====================================================================================
-##### ####### 1. dpmdirect.R #######
 Description: Modified Estimation and analysis of Differential Networks of FASD data 
              by directly using FASD data matrix
 ====================================================================================
-####### ####### dpmchangelanbdaloss.R #######
+
+====================================================================================
+####### 1. dpmchangelanbdaloss.R #######
 ## based on Dave Zhao's "dpm.R" package
+====================================================================================
+
 
 dpm <- function(X1,X0,
                 lambda=NULL,nlambda=100,lambda.min.ratio=NULL,
@@ -196,16 +198,25 @@ dpm.ic <- function(S1,S0,ret,n,penalty)
     return(apply(ic,1,which.min));
 }
 
-##### ####### directgenerate.R #######
+
+====================================================================================
+####### 2. directgenerate.R #######
+## DEA.R on Real Data
+====================================================================================
 ## **************************************************************
 ## DEA.R on Real Data
 ## **************************************************************
 
 rm(list=ls());
 dyn.load("dpm.so");
-source("dpm.R");
+source("dpmchangelambda.R");
 library(MASS);
+library(ROCR);
 
+
+n=180;
+n1=n*25;
+n0=n*30;
 ## **************************************************************
 ## Read Data
 ## **************************************************************
@@ -214,10 +225,10 @@ data=read.csv("/home/merganser/jinjin/data1.csv",header=T)
 group=read.csv("/home/merganser/jinjin/group.csv",header=T)
 data=as.matrix(data)
 group=as.matrix(group)
-ns=55;
-nt=180;
-p=ncol(data);
-nlambda=10;;
+ns=55
+nt=180
+p=ncol(data)
+nlambda=100;
  
 ret = vector("list", ns);
 dd=matrix(0,nrow(data),ncol(data))
@@ -231,6 +242,16 @@ for (j in 1:nt)
 ret[[i]][j,k]=ret[[i]][j,k]-mean(ret[[i]][,k]);
 }
 }
+############## Or Standardize by subtracting each entries of FASD matrix by the total mean #########
+#m=c(1:p);
+#for (j in 1:nt)
+#{for (k in 3:p)
+#{m[k]=mean(data[,k]);
+#ret[[i]][j,k]=ret[[i]][j,k]-m[k];
+#}
+#}
+#}
+
 numcontrol=0;
 for (i in 1:ns)
 { if (group[i,4]==1)
@@ -241,8 +262,10 @@ for (i in 1:ns)
 { if (group[i,4]==2)
 {numFASD=numFASD+1}
 }
+
 X1.t=matrix(0,numcontrol*nt,p-2)
 X0.t=matrix(0,numFASD*nt,p-2)
+
 i=1;
 for (j in 1:ns)
 {
@@ -257,6 +280,7 @@ i=i+1;
 }
 }
 }
+
 i=1;
 for (j in 1:ns)
 {
@@ -271,8 +295,38 @@ i=i+1;
 }
 }
 }
-##### Calculation #####
-fit.aic <- dpm(X1.t,X0.t,nlambda=10,tuning="aic");
-fit.cv <- dpm(X1.t,X0.t,nlambda=10,tuning="cv",folds=3);
+#####Calculation#####
+setwd("/home/merganser/jinjin")
+fit.aic <- dpm(X1.t,X0.t,nlambda=100,tuning="aic");
+fit.cv <- dpm(X1.t,X0.t,nlambda=100,tuning="cv",folds=3);
+setwd("/home/merganser/jinjin/TestDE/Direct/Result/Direct100")
+save(fit.aic,fit.cv, file="directlambda.RData")
+
+====================================================================================
+####### 3. directanalysis.R #######
+====================================================================================
+
+library(MASS);
+p=74;
+n=180;
+n1=n*25;
+n0=n*30;
+nlambda=10;
+q=fit.aic[[4]][[5]]
+th=1e-05;
+
 setwd("/home/merganser/jinjin/TestDE/direct/Result")
-save(fit.aic,fit.cv, file="directgenerate.RData")
+load("directlambda.RData")
+
+m=fit.aic[[1]][[q]];
+x=matrix(0,1,p*p);
+y=matrix(0,1,p*p);
+k=1;
+for (i in (1:(p)))
+{for (j in (1:(i)))
+{ if (m[i,j]>=th) {x[1,k]=j;y[1,k]=i;k=k+1;}
+}
+}
+pdf("plotNonzeroDE.pdf")
+plot(x,y,type = "p",cex=.5)
+dev.off()
