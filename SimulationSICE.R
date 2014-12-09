@@ -9,8 +9,6 @@ Description: Modified Estimation and analysis of Differential Networks of Data w
 ## based on Chen's SRC program
 ====================================================================================
 rm(list=ls());
-dyn.load("dpm.so");
-source("dpm.R");
 library(MASS);
 library(ROCR);
 
@@ -128,7 +126,6 @@ save(out1, file = "newdata2.RData")
 
 ====================================================================================
 ####### 2. DEgenerate.R #######
-## based on Chen's SRC program
 ====================================================================================
 rm(list=ls());
 dyn.load("dpm.so");
@@ -172,18 +169,50 @@ O0=out1$O0;
 D0=O0-O1;
 setwd("/home/merganser/jinjin/TestDE/ROC")
 load("fitgenerate.RData")
-fit.aic =aic
-fit.cv =cv
 
+i=fit.aic[[4]][[5]];
+j=fit.cv[[4]][[5]];
 for (i in (1:10))           #####################absolute value!####################
 {fit.aic[[1]][[i]]=abs(fit.aic[[1]][[i]])
-fit.cv[[1]][[i]]=abs(fit.cv[[1]][[i]])
+fit.cv[[1]][[j]]=abs(fit.cv[[1]][[j]])
 }
 D0=abs(D0);
+
+############AIC############
+esaic=matrix(0,p,p*nlambda)
+list=list()
+k=c(1:6);
+for (i in (1:6))
+{k[i]=fit.aic[[4]][[i]];
+esaic[,(p*(i-1)+1):(p*i)] = fit.aic[[1]][[k[i]]]
+}
+
+eaic=list();
+eaic$a1=esaic[,(p*(1-1)+1):(p*1)];
+eaic$a2=esaic[,(p*(2-1)+1):(p*2)];
+eaic$a3=esaic[,(p*(3-1)+1):(p*3)];
+eaic$a4=esaic[,(p*(4-1)+1):(p*4)];
+eaic$a5=esaic[,(p*(5-1)+1):(p*5)];
+eaic$a6=esaic[,(p*(6-1)+1):(p*6)];
+############CV##############
+escv=matrix(0,p,p*nlambda)
+k=c(1:6);
+for (i in (1:6))
+{k[i]=fit.cv[[4]][[i]];
+escv[,(p*(i-1)+1):(p*i)] = fit.cv[[1]][[k[i]]]}
+ecv=list();
+ecv$a1=escv[,(p*(1-1)+1):(p*1)];
+ecv$a2=escv[,(p*(2-1)+1):(p*2)];
+ecv$a3=escv[,(p*(3-1)+1):(p*3)];
+ecv$a4=escv[,(p*(4-1)+1):(p*4)];
+ecv$a5=escv[,(p*(5-1)+1):(p*5)];
+ecv$a6=escv[,(p*(6-1)+1):(p*6)];
+
 ####################   ROC   ###################
 setwd("/home/merganser/jinjin/TestDE/ROC")
 library(ROCR);
 ######1######
+q=5;  ###specified by the user###
 estimation=c(1:p*p);
 true=c(1:p*p);
 k=1;
@@ -207,40 +236,13 @@ plot(perf,colorize=TRUE)
 dev.off()
 
 ############AIC############
-esaic=matrix(0,p,p*nlambda)
-list=list()
-k=c(1:6);
-for (i in (1:6))
-{k[i]=fit.aic[[4]][[i]];
-esaic[,(p*(i-1)+1):(p*i)] = fit.aic[[1]][[k[i]]]
-}
-eaic=list();
-eaic$a1=esaic[,(p*(1-1)+1):(p*1)];
-eaic$a2=esaic[,(p*(2-1)+1):(p*2)];
-eaic$a3=esaic[,(p*(3-1)+1):(p*3)];
-eaic$a4=esaic[,(p*(4-1)+1):(p*4)];
-eaic$a5=esaic[,(p*(5-1)+1):(p*5)];
-eaic$a6=esaic[,(p*(6-1)+1):(p*6)];
-############CV##############
-escv=matrix(0,p,p*nlambda)
-k=c(1:6);
-for (i in (1:6))
-{k[i]=fit.cv[[4]][[i]];
-escv[,(p*(i-1)+1):(p*i)] = fit.cv[[1]][[k[i]]]}
-ecv=list();
-ecv$a1=escv[,(p*(1-1)+1):(p*1)];
-ecv$a2=escv[,(p*(2-1)+1):(p*2)];
-ecv$a3=escv[,(p*(3-1)+1):(p*3)];
-ecv$a4=escv[,(p*(4-1)+1):(p*4)];
-ecv$a5=escv[,(p*(5-1)+1):(p*5)];
-ecv$a6=escv[,(p*(6-1)+1):(p*6)];
-############AIC############
 tpup=0;tpdown=0;
 tnup=0;tndown=0;
 tdup=0;tddown=0;
 tndup=0;tnddown=0;
 th=1.00000e-03  ### Specified by the user ###
-q=1;#######################Loss Function
+#######################Loss Function
+q=5; ###specified by the user###
 for (i in 1:(p))
 {
 for (j in 1:(p))
@@ -275,7 +277,7 @@ setwd("/home/merganser/jinjin/TestDE/Simulation/Result")
 save(tp,tn,td,tnd,Fnorm, file="truepositiverate_etc.RData")
 
 ######################   CV   #######################
-q=fit.aic[[4]][[6]];  
+q=fit.aic[[4]][[5]];  
 tpup2=0;tpdown2=0;
 tnup2=0;tndown2=0;
 tdup2=0;tddown2=0;
