@@ -18,12 +18,15 @@ Sihai D. Zhao, T. Tony Cai, and Hongzhe Li (https://github.com/sdzhao/dpm/blob/m
 ######Realdata_Direct.R
 - Description: Modified (tuning parameters, loss function, etc.) Estimation and analysis 
                of Differential Networks of FASD data by directly using FASD data matrix.
+
 ######Realdata_2sub.R
 - Description: Modified Estimation and analysis of Differential Networks of FASD data 
                by dividing each of the two groups into two subgroups.
+
 ######SimulationSICE.R
 - Description: Modified Estimation and analysis of Differential Networks of Data with 
                Theoretical Covariance Matrix obtained by SICE of FASD data.
+
 ######Dpmcvx.R
 - Description: Modified Estimation and analysis of Differential Networks of Simulation 
                based on FASD Data Calling CVX package from Matlab in R. R code was modified 
