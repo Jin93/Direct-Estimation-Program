@@ -1,9 +1,9 @@
-#####Direct-Estimation-Program
+######Direct-Estimation-Program
 =========================
 ################################################################
-######README, 12.08.2014
-######Program of Direct estimation of differential networks
-######Jin Jin
+#######README, 12.08.2014
+#######Program of Direct estimation of differential networks
+#######Jin Jin
 ################################################################
 ==============================================================
 ######Description
