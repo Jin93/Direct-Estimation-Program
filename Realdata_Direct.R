@@ -234,7 +234,7 @@ for (j in 1:nt)
 ret[[i]][j,k]=ret[[i]][j,k]-mean(ret[[i]][,k]);
 }
 }
-############## Or Standardize by subtracting each entries of FASD matrix by the total mean #########
+########## Or Standardize by subtracting each entries of FASD matrix by the total mean #########
 #m=c(1:p);
 #for (j in 1:nt)
 #{for (k in 3:p)
