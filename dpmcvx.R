@@ -11,7 +11,7 @@ Description: Modified Estimation and analysis of Differential Networks of Simula
 ========================================================================================
 ####### 1. dpmcvxgenerate.R #######
 ## To generate data with precision matrices obtained by SICE simulation and use dpmcvx.R
-   and dpm.R to compare the results. 
+## and dpm.R to compare the results. 
 ========================================================================================
 
 setwd("/home/merganser/jinjin");
@@ -330,13 +330,13 @@ if (abs(estimation[i])<=1e-04){estimation[i]=0;}
 pred <- prediction(estimation,true)
 perf <- performance(pred,"tpr","fpr")
 setwd("/home/merganser/jinjin/jindpm/comparecode/result")
-pdf("dpm1.pdf")
+pdf("ROCcvx1.pdf")
 plot(perf,colorize=TRUE)
 dev.off()
 
 output= NA
 output= list(estimation=estimation; true=true)
-save(output, file="dpm1.RData")
+save(output, file="dpmcvx1.RData")
 
 ##### function dpm.cv and dpm.ic are the same as the original ones #####
 ##### Then we can compare estimation from dpmcvx.R with estimation from dpm.R (Need different tuning parameters to obtain same results)
