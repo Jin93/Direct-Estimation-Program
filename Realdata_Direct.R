@@ -1,4 +1,4 @@
-##### RealDataDirect.R
+##### Realdata_Direct.R
 ====================================================================================
 Description: Modified Estimation and analysis of Differential Networks of FASD data 
              by directly using FASD data matrix
