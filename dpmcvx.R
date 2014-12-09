@@ -1,10 +1,60 @@
 ##### dpmcvx.R
-====================================================================================
-Description: Modified Estimation and analysis of Differential Networks of Data 
-             Calling CVX package from Matlab in R and example usage. R code was 
-             modified based on code from the dpm.R 
+========================================================================================
+Description: Modified Estimation and analysis of Differential Networks of Simulation 
+             based on FASD Data Calling CVX package from Matlab in R and example 
+             usage. R code was modified based on code from the dpm.R 
              (https://github.com/sdzhao/dpm/blob/master/dpm.R).
-====================================================================================
+             Use SICE as true precision matrices to generate data and compare dpmcvx.R
+             and dpm.R
+========================================================================================
+
+========================================================================================
+####### 1. dpmcvxgenerate.R #######
+## To generate data with precision matrices obtained by SICE simulation and use dpmcvx.R
+   and dpm.R to compare the results. 
+========================================================================================
+
+setwd("/home/merganser/jinjin");
+rm(list=ls());
+dyn.load("dpm.so");
+source("dpm.R");
+library(MASS);
+
+setwd("/home/merganser/jinjin/result")
+load("newdata2.RData")
+O1=out1$O1;
+O0=out1$O0;
+D0=O0-O1;
+p=74;
+n=180;
+n1=n*25;
+n0=n*30;
+
+X1.t<- mvrnorm(n1,rep(0,p),solve(O1));
+X0.t<- mvrnorm(n0,rep(0,p),solve(O0));
+
+setwd("/home/merganser/jinjin")
+fit.aic <- dpm(X1.t,X0.t,nlambda=10,tuning="aic");
+k=fit.aic[[4]][[6]];
+est = fit.aic[[1]][[4]];
+
+write.matrix(format(est, scientific=FALSE), 
+               file = paste("/home/merganser/jinjin/Jindpm/comparecode/result", "initialdpm.csv", sep="/"), sep=",")
+               
+========================================================================================
+####### 2. dpmcvx.R #######
+## based on Dave Zhao's "dpm.R" package
+========================================================================================
+rm(list=ls());
+dyn.load("dpm.so");
+source("dpm.R");
+library(MASS);
+library(ROCR);
+p=74;
+n=180;
+n1=n*25;
+n0=n*30;
+
 dpmcvx<- function(X1,X0,
                 lambda=NULL,nlambda=10,lambda.min.ratio=NULL,
                 rho=NULL,shrink=NULL,prec=0.001,max.ite=100,
@@ -112,7 +162,7 @@ matlab.lines <- c(
 "S=csvread('/home/merganser/jinjin/Jindpm/CVX/S.csv');",
 "e=csvread('/home/merganser/jinjin/Jindpm/CVX/e.csv');",
 "lambda=csvread('/home/merganser/jinjin/Jindpm/CVX/lambda.csv');",
-"n1 = 5; n2=5; p = 3; d=p*(p+1)/2; nlambda=10;",
+"n1 = 4500; n2=5400; p = 74; d=p*(p+1)/2; nlambda=10;",
 "beta=zeros(nlambda*d,1)",
 "for i=1:nlambda",
 "cvx_begin",
@@ -123,7 +173,7 @@ matlab.lines <- c(
 "cvx_end",
 "beta(((i-1)*d+1):(i*d),1)=x",
 "end ",
-"save /home/merganser/jinjin/Jindpm/CVX/beta.mat beta"
+"save /home/merganser/jinjin/Jindpm/CVX/beta1.mat beta",
 )
 
 #create a MATLAB script containing all the commands in matlab.lines
@@ -135,7 +185,7 @@ system("matlab -nodisplay -r \"run('/home/merganser/jinjin/Jindpm/CVX/myscript.m
 setwd("/home/merganser/jinjin/Jindpm/R.matlab_3.1.1/R.matlab")
 library(R.matlab)
 path <- system.file("mat-files", package="R.matlab")
-pathname <- file.path("/home/merganser/jinjin/Jindpm/CVX", "beta.mat")
+pathname <- file.path("/home/merganser/jinjin/Jindpm/CVX", "beta1.mat")
 data <- readMat(pathname)
 diff=data$beta
 
@@ -183,13 +233,11 @@ loss <- function(D,S1,S0)
              sqrt(sum(err^2)), ## frobenius
              sum(svd(err,nu=0,nv=0)$d))); ## nuclear
 }
-
 ## **************************************************************
 ## tuning methods
 ## **************************************************************
 ## ==============================================================
 ## cv
-## ==============================================================
 dpm.cv <- function(X1,X0,
                    lambda=NULL,
                    rho=NULL,shrink=NULL,prec=0.001,max.ite=100,
@@ -234,7 +282,6 @@ dpm.cv <- function(X1,X0,
 
 ## ==============================================================
 ## ic (information criteria)
-## ==============================================================
 dpm.ic <- function(S1,S0,ret,n,penalty)
 {
     lowtri <- which(lower.tri(ret[[1]],diag=TRUE));
@@ -244,4 +291,52 @@ dpm.ic <- function(S1,S0,ret,n,penalty)
     return(apply(ic,1,which.min));
 }
 
+setwd("/home/merganser/jinjin/result")
+load("newdata2.RData")
+O1=out1$O1;
+O0=out1$O0;
+D0=O0-O1;
+p=74;
+n=180;
+n1=n*25;
+n0=n*30;
+X1<- mvrnorm(n1,rep(0,p),solve(O1));
+X0<- mvrnorm(n0,rep(0,p),solve(O0));
+
+setwd("/home/merganser/jinjin")
+fitcvx.aic<- dpmcvx(X1,X0,nlambda=10,tuning="aic");
+fitcvx.cv<- dpmcvx(X1,X0,nlambda=10,tuning="cv",folds=3);
+k=fitcvx.aic[[4]][[5]];
+est = fit.aic[[1]][[k]]                # To calculate estimation of Difference between two inverse covariance metrices #
+
+estimation=c(1:p*p);
+true=c(1:p*p);
+k=1;
+for (i in (1:(p)))
+{for (j in (1:(p)))
+{estimation[k]=abs(est[i,j]);    #####Modified by the user#####
+true[k]=abbs(D0[i,j]);
+k=k+1;
+}
+}
+
+for (i in (1:(p*p)))
+{if (abs(true[i])>1e-04){true[i]=1;}       ##### Threshold Modified by the user #####
+if (abs(true[i])<=1e-04){true[i]=0;}
+if (abs(estimation[i])>1e-04){estimation[i]=1;}
+if (abs(estimation[i])<=1e-04){estimation[i]=0;}
+}
+
+pred <- prediction(estimation,true)
+perf <- performance(pred,"tpr","fpr")
+setwd("/home/merganser/jinjin/jindpm/comparecode/result")
+pdf("dpm1.pdf")
+plot(perf,colorize=TRUE)
+dev.off()
+
+output= NA
+output= list(estimation=estimation; true=true)
+save(output, file="dpm1.RData")
+
 ##### function dpm.cv and dpm.ic are the same as the original ones #####
+##### Then we can compare estimation from dpmcvx.R with estimation from dpm.R (Need different tuning parameters to obtain same results)
