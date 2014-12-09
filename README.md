@@ -1,4 +1,4 @@
-######Direct-Estimation-Program
+##### Direct-Estimation-Program
 =========================
 ################################################################
 ###### README, 12.08.2014
@@ -6,14 +6,14 @@
 ###### Jin Jin
 ################################################################
 ==============================================================
-######Description
+###### Description
 ==============================================================
 R program for Direct Estimation, its modifications and applications on FASD data. 
 R code for Direct Estimation was modified based on code from the dpm.R by 
 Sihai D. Zhao, T. Tony Cai, and Hongzhe Li (https://github.com/sdzhao/dpm/blob/master/dpm.R).
   
 ==============================================================
-#####Contents
+##### Contents
 ==============================================================
 ######Realdata_Direct.R
 - Description: Modified (tuning parameters, loss function, etc.) Estimation and analysis 
@@ -33,4 +33,4 @@ Sihai D. Zhao, T. Tony Cai, and Hongzhe Li (https://github.com/sdzhao/dpm/blob/m
                based on code from the dpm.R (https://github.com/sdzhao/dpm/blob/master/dpm.R).
                Use SICE as true precision matrices to generate data and compare dpmcvx.R
                and dpm.R.
-#All of the programs need compilation when used.
+###### All of the programs need compilation when used.
