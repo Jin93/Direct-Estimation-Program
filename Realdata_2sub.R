@@ -10,9 +10,9 @@ Description: Modified Estimation and analysis of Differential Networks of FASD d
 ====================================================================================
 
 ====================================================================================
-####### 2. dpm.R #######
-## Same as the one in RealdataDirect.R
+####### 2. 2subgenerate.R #######
 ====================================================================================
+
 rm(list=ls());
 dyn.load("dpm.so");
 source("dpmchangelambda.R");
@@ -36,14 +36,21 @@ for (i in 1:ns)
 {
 ret[[i]]=matrix(NA,nrow=nt,ncol=p)
 ret[[i]]=data[(nt*(i-1)+1):(nt*i),]
-m=c(1:p);
+
 for (j in 1:nt)
 {for (k in 3:p)
-{m[k]=mean(data[,k]);
-ret[[i]][j,k]=ret[[i]][j,k]-m[k];
-}}}
+ret[[i]][j,k]=ret[[i]][j,k]-mean(ret[[i]][,k]);
+}
+}
+########## Or Standardize by subtracting each entries of FASD matrix by the total mean #########
+#m=c(1:p);
+#for (j in 1:nt)
+#{for (k in 3:p)
+#{m[k]=mean(data[,k]);
+#ret[[i]][j,k]=ret[[i]][j,k]-m[k];
+#}}}
+###############
 
-####################################
 numcontrol=0;
 for (i in 1:ns)
 { if (group[i,4]==1)
@@ -104,6 +111,7 @@ fit.aic2 <- dpm(X12.t,X02.t,nlambda=10,tuning="aic");
 fit.cv2 <- dpm(X12.t,X02.t,nlambda=10,tuning="cv",folds=3);
 setwd("/home/merganser/jinjin/TestDE/2sub/Result")
 save(fit.aic1,fit.cv1,fit.aic2,fit.cv2, file="2sublambda2.RData")
+
 ====================================================================================
 ####### 3. 2subanalysis.R #######
 ====================================================================================
